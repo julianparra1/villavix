@@ -3,29 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sifti - Iniciar sesión</title>
+    <title>Sifti - Crear cuenta</title>
     <link rel="stylesheet" href="./static/style.css">
 </head>
 <body>
     <div class="container">
         <h1>Sifti</h1><br><br>
         
-        <form method="POST" action="/login">
+        <form method="POST" action="/register">
 
             <input class="send" type="text" id="username" name="username" placeholder="Usuario" required><br><br>
-            <input class="send" type="password" id="password" name="password" placeholder="Contraseña" required>
+            <input class="send" type="password" id="password" name="password" placeholder="Contraseña" required><br><br>
             {% if checker %}
-            <p class="alert">Usuario o contraseña incorrectos</p>
+            <p class="alert">Este usuario no esta disponible</p>
             {% else %}
             <p> </p>
             {% endif %}
-    
-            <button href="#" class="btnpurpure" type="submit">Iniciar sesión</button>
-            <hr>
+            <button href="/login" type="submit" class="btnyellow">Crear cuenta</button>
         </form>
-        <a href="/register">
-        <button class="btnyellow">Registrarse</button>
-        </a>
     </div>
 </body>
 </html>

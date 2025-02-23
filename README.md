@@ -1,1 +1,1 @@
-## He actualizado la pantalla de login.
+## He actualizado la pantalla de login, los tres usuarios disponibles estan en el main.py, si ingresas un usuario o contraseña incorrectas te lo dice. El boton de registrarse esta terminado.

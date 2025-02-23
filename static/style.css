@@ -18,9 +18,9 @@ body {
 h1 {
     margin-bottom: 20px;
 }
-.btn {
+.btnpurpure {
     display: inline-block;
-    padding: 10px 20px;
+    padding: 10px 70px;
     font-size: 16px;
     color: white;
     background-color: #ae0afa;
@@ -28,7 +28,7 @@ h1 {
     border-radius: 5px;
     transition: background 0.3s;
 }
-.btn:hover {
+.btnpurpure:hover {
     background-color: #8502a6;
 }
 .send {
@@ -46,4 +46,24 @@ h1 {
 
 .alert{
     color: red;
+}
+
+hr {
+    border: 0;
+    border-top: 4px dotted black;
+    margin: 20px 0;
+}
+
+.btnyellow {
+    display: inline-block;
+    padding: 10px 50px;
+    font-size: 16px;
+    color: white;
+    background-color: #bf8426;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+.btnyellow:hover {
+    background-color: #c46d15;
 }
