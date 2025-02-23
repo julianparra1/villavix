@@ -8,4 +8,4 @@ def hello_world():
 
 @app.route('/luis')
 def hello():
-    return "<h1>Hola descompuse esto</h1>"
+    return render_template("extra.html")
