@@ -6,8 +6,26 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import Post from "@/components/post";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { NewPost } from "@/components/newpost";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Label } from "@/components/ui/label";
 
 export function MainFeed() {
+  const [posts, setPosts] = useState([
+    { id: 1, content: "Esta es una publicación de ejemplo.", author: "Usuario Ejemplo" },
+    { id: 2, content: "Otra publicación de prueba.", author: "Otro Usuario" },
+  ]);
+
+  const handlePostSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    const content = formData.get("post-content") as string;
+    if (content.trim()) {
+      setPosts([{ id: Date.now(), content, author: "Usuario Actual" }, ...posts]);
+      e.currentTarget.reset();
+    }
+  };
   const pinnedPosts = [
     { id: 1, range: "FUNCIONARIO", // Asegúrate de escribir exactamente "FUNCIONARIO" o "CIUDADANO"
       title: "  Los gatos dominaran el mundo",
@@ -38,31 +56,20 @@ export function MainFeed() {
 
   return (
     <div className="space-y-6">
-      {/*<div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-4 w-full pl-4">
         <Avatar>
           <AvatarImage src="/placeholder-avatar.jpg" alt="@username" />
           <AvatarFallback>UN</AvatarFallback>
         </Avatar>
-        <form onSubmit={handlePostSubmit} className="flex-grow">
-          <Input name="post-content" placeholder="¿Qué estás pensando?" />
-          <Button type="submit" className="mt-2">
-            Publicar
-          </Button>
-        </form>
+        <NewPost/>
       </div>
-      <div className="space-y-4">
-        {posts.map((post) => (
-          <div key={post.id} className="bg-white p-4 rounded-lg shadow">
-            <h3 className="font-bold">{post.author}</h3>
-            <p>{post.content}</p>
-          </div>
-        ))}
-      </div> */}
-      <div className="space-y-5 p-4">
+      
+      <div className="space-y-5 px-4">
       {pinnedPosts.map((post) => (
           <Post key={post.id} {...post} />
         ))}
       </div>
+
     </div>
-  )
+  );
 }
