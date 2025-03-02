@@ -28,7 +28,7 @@ export default function RootLayout({
             enableSystem
             disableTransitionOnChange
           >
-            <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-white dark:bg-gradient-to-br dark:from-gray-950 dark:to-gray-900 text-gray-800 dark:text-white">  
+            <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-white dark:bg-black dark:text-white">  
             <ConditionalHeader/>
             {children}
             <Toaster />

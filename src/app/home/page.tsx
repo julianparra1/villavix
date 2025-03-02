@@ -17,17 +17,17 @@ export default function HomeGo() {
         
         {/* Main Feed */}
         <div className="flex-1 md:w-1/2">
-          <ScrollArea className="border-none h-[600px] w-full rounded-md border p-4">
-            <MainFeed />
-            <MainFeed />
+          <ScrollArea className="border-none h-[85vh] w-full rounded-md border p-4">
             <MainFeed />
           </ScrollArea>
         </div>
         
         {/* Right Sidebar */}
-        <div className="flex-1 md:flex-none md:w-1/4">
-          <ScrollArea className="border-none rounded-md border">
-            <RightSidebar />
+        <div className="flex-1 md:flex-none md:w-1/4 ">
+          <ScrollArea className="border-none rounded-md border h-[85vh]">
+            
+          <RightSidebar />
+          <RightSidebar />
           </ScrollArea>
         </div>
       </div>
