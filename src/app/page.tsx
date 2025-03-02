@@ -15,31 +15,7 @@ import { CheckIcon, RocketIcon, StarIcon, ArrowRightIcon, HeartIcon, ChatBubbleI
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-gray-950 dark:to-gray-900 text-gray-800 dark:text-white">
-      {/* Header */}
-      <header className="container mx-auto px-4 py-6 flex justify-between items-center bg-white/80 dark:bg-transparent backdrop-blur-sm">
-        <div className="flex items-center gap-2">
-          <Image
-            src="/logo.svg"
-            alt="Logo"
-            width={40}
-            height={40}
-          />
-          <span className="font-bold text-xl">VillaVix</span>
-        </div>
-        <div className="flex items-center gap-6">
-          <nav className="hidden md:flex space-x-6">
-            <Link href="#features" className="text-gray-600 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition">Características</Link>
-            <Link href="#testimonials" className="text-gray-600 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition">Testimonios</Link>
-            <Link href="#how-it-works" className="text-gray-600 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition">Cómo Funciona</Link>
-          </nav>
-          
-          <Button variant="outline" className="hidden md:flex">Iniciar Sesión</Button>
-          <Button className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-700 dark:hover:bg-indigo-800">Registrarse</Button>
-          <ModeToggle/>
-        </div>
-      </header>
-
+    <div>  
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-24 flex flex-col items-center text-center">
         <Badge className="mb-4 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-400 hover:bg-indigo-200 dark:hover:bg-indigo-900/50">✨ Nueva Plataforma</Badge>
@@ -161,7 +137,7 @@ export default function HomePage() {
 
       {/* CTA Section */}
       <section className="container mx-auto px-4 py-24">
-        <Card className="w-full max-w-4xl mx-auto bg-white dark:bg-gradient-to-r dark:from-indigo-900/40 dark:to-purple-900/40 border-gray-100 dark:border-gray-700">
+        <Card className="w-full max-w-4xl mx-auto bg-white dark:bg-gray-800/30 border-gray-100 dark:border-gray-700">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white">¿Listo para mejorar tu comunidad?</CardTitle>
             <CardDescription className="text-gray-600 dark:text-gray-300 text-lg mt-2">
