@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { authService } from '@/lib/auth';
 import { Button } from "@/components/ui/button";
+import { Eye, EyeOff } from "lucide-react"
 import {
   Card,
   CardContent,
@@ -21,7 +22,7 @@ function LoginPage() {
   const searchParams = useSearchParams();
   const [error, setError] = useState<string>('');
   const [loading, setLoading] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false)
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
@@ -30,23 +31,26 @@ function LoginPage() {
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
+    
 
-    try {
-      const { token } = await authService.login(email, password);
-      document.cookie = `sessionToken=${token}; path=/`;
-      
-      const returnUrl = searchParams.get('returnUrl') || '/';
-      router.push(returnUrl);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    alert(`Se a registrado, EMAIL: ${email}, PASSWORD: ${password}`)
+    setLoading(false);
+    
+    // try {
+    //   const { token } = await authService.register(email, password);
+    //   document.cookie = sessionToken=${token}; path=/;
+    //   router.push('/');
+    // } catch (err: any) {
+    //   setError(err.message);
+    // } finally {
+    //   setLoading(false);
+    // }
+  };
 
   return (
 
     <div className="flex items-center justify-center min-h-screen bg-background">
+      
       <Card className="w-[350px]">
         <CardHeader>
           <CardTitle>Iniciar sesión</CardTitle>
@@ -54,7 +58,7 @@ function LoginPage() {
             Ingresa tus credenciales para continuar
           </CardDescription>
         </CardHeader>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit}> 
           <CardContent className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -62,19 +66,32 @@ function LoginPage() {
                 id="email"
                 name="email"
                 type="email"
-                placeholder="tu@email.com"
+                placeholder="escribetu@email.com"
                 required
               />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Contraseña</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                required
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  required
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute right-0 top-0 h-full px-3"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                <span className="sr-only">{showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}</span>
+                </Button>
+              </div>
             </div>
+            <div className="space-y-2"></div>
             {error && (
               <p className="text-sm text-destructive">{error}</p>
             )}
