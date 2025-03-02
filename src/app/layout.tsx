@@ -2,6 +2,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/components/theme-provider"
+import { Toaster } from "@/components/ui/sonner";
 import ConditionalHeader from "@/components/ConditionalHeader"
 const inter = Inter({ subsets: ["latin"] });
 import { usePathname } from "next/navigation";
@@ -30,6 +31,7 @@ export default function RootLayout({
             <div className="min-h-screen bg-white dark:bg-gradient-to-br dark:from-gray-950 dark:to-gray-900 text-gray-800 dark:text-white">  
             <ConditionalHeader/>
             {children}
+            <Toaster />
             </div>
           </ThemeProvider>
         </body>

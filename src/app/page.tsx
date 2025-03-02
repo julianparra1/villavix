@@ -119,7 +119,7 @@ export default function HomePage() {
                     <StarIcon key={i} className="h-5 w-5 text-yellow-500" />
                   ))}
                 </div>
-                <p className="text-gray-700 dark:text-gray-300 mb-6 italic">"{testimonial.quote}"</p>
+                <p className="text-gray-700 dark:text-gray-300 mb-6 italic">&quot;{testimonial.quote}&quot;</p>
                 <div className="flex items-center gap-4">
                   <div className="h-12 w-12 rounded-full bg-indigo-100 dark:bg-indigo-600/30 flex items-center justify-center text-indigo-700 dark:text-indigo-300">
                     {testimonial.author.charAt(0)}
