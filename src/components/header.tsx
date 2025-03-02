@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 
 export default function Header(){
     return(
-        <header className="container mx-auto px-4 py-6 flex justify-between items-center bg-white/80 dark:bg-transparent backdrop-blur-sm">
+        <header className="container mx-auto px-4 py-2 flex justify-between items-center bg-white/80 dark:bg-transparent backdrop-blur-sm">
         <div className="flex items-center gap-2">
           <Image
             src="/logo.svg"

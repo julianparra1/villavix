@@ -7,7 +7,7 @@ const ConditionalHeader = () => {
   const pathname = usePathname();
 
   // Si la ruta es "/login" o "/register", no se renderiza el header
-  if (pathname === "/login" || pathname === "/register" || pathname === "/home") {
+  if (pathname === "/login" || pathname === "/register") {
     return null;
   }
 
