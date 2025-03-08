@@ -6,7 +6,7 @@ import { getStorage } from 'firebase-admin/storage';
 try {
   if (!getApps().length) {
     initializeApp({
-      credential: cert(process.env.FIREBASE_ADMIN_JSON as string),
+      credential: cert(JSON.parse(process.env.FIREBASE_ADMIN_JSON as string)),
       databaseURL: process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
       storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
     });
