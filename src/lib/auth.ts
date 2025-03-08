@@ -2,7 +2,8 @@ import { auth, db } from '@/lib/firebase/config';
 import { 
   signInWithEmailAndPassword, 
   createUserWithEmailAndPassword,
-  signOut 
+  signOut,
+  updateProfile 
 } from 'firebase/auth';
 import { doc, setDoc } from 'firebase/firestore';
 
@@ -25,12 +26,31 @@ export const authService = {
     }
   },
 
-  async register(email: string, password: string) {
+  async register(
+    email: string, 
+    password: string, 
+    name: string, 
+    lastname: string, 
+    genero: string, 
+    birthdate: string,
+    age: number
+  ) {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       
+      // Update profile with display name
+      await updateProfile(userCredential.user, {
+        displayName: `${name} ${lastname}`
+      });
+      
+      // Create user document with all fields
       await setDoc(doc(db, 'users', userCredential.user.uid), {
         email,
+        name,
+        lastname,
+        genero,
+        birthdate,
+        age,
         role: 'ciudadano',
         createdAt: new Date().toISOString()
       });
