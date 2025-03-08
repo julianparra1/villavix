@@ -38,7 +38,7 @@ export default function RegisterPage() {
     e.preventDefault();
     setError('');
     setLoading(true);
-
+  
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
@@ -46,28 +46,32 @@ export default function RegisterPage() {
     const lastname = formData.get('lastname') as string;
     const genero = formData.get('genero') as string;
     const birthdate = formData.get('birthdate') as string;
-//?.toString()
     const birthdateDate = new Date(birthdate)
     const age = calculateAge(birthdateDate)
-  
+    
     if (age < 18) {
       setError("Debes ser mayor de 18 años para registrarte.")
       setLoading(false)
       return
     }
-
-    alert(`Se a registrado, EMAIL: ${email}, PASSWORD: ${password}, NAME: ${name}, LASTNAME: ${lastname}, GENERO: ${genero}, BIRTHDATE: ${birthdate}`)
-    setLoading(false);
-    
-    // try {
-    //   const { token } = await authService.register(email, password);
-    //   document.cookie = sessionToken=${token}; path=/;
-    //   router.push('/');
-    // } catch (err: any) {
-    //   setError(err.message);
-    // } finally {
-    //   setLoading(false);
-    // }
+  
+    try {
+      const { token } = await authService.register(
+        email, 
+        password, 
+        name, 
+        lastname, 
+        genero, 
+        birthdate, 
+        age
+      );
+      document.cookie = `sessionToken=${token}; path=/`;
+      router.push('/');
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

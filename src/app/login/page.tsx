@@ -32,19 +32,16 @@ function LoginPage() {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
     
-
-    alert(`Se a registrado, EMAIL: ${email}, PASSWORD: ${password}`)
-    setLoading(false);
     
-    // try {
-    //   const { token } = await authService.register(email, password);
-    //   document.cookie = sessionToken=${token}; path=/;
-    //   router.push('/');
-    // } catch (err: any) {
-    //   setError(err.message);
-    // } finally {
-    //   setLoading(false);
-    // }
+    try {
+      const { token } = await authService.login(email, password);
+      document.cookie = `sessionToken=${token}; path=/`;      
+      router.push('/');
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    };
   };
 
   return (
