@@ -14,16 +14,13 @@ interface PostsListProps {
 }
 
 export function PostsList({ initialPosts, initialHasMore }: PostsListProps) {
-  // Use the real-time hook instead of managing state manually
   const { posts, hasMore, isLoading, loadMorePosts } = useRealtimePosts(initialPosts);
   
-  // Use react-intersection-observer to detect when the loading element is in view
   const { ref, inView } = useInView({
     threshold: 0,
     delay: 300,
   });
   
-  // Load more posts when the loading element comes into view
   const loadMoreOnInView = useCallback(() => {
     if (inView && hasMore && !isLoading) {
       loadMorePosts();
@@ -56,7 +53,7 @@ export function PostsList({ initialPosts, initialHasMore }: PostsListProps) {
         <PostComponent key={`${post.id}-${post.createdAt}`} {...post}/>
       ))}
       
-      {/* Loading indicator - this element triggers the next fetch when it comes into view */}
+      {/* Loading indicator */}
       {hasMore && (
         <div 
           ref={ref} 
