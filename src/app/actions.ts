@@ -105,8 +105,7 @@ export async function createPost(formData: FormData) {
       createdAt: FieldValue.serverTimestamp()
     });
 
-    // Revalidate the dashboard path to show the new post
-    revalidatePath('/dashboard');
+    revalidatePath('/home');
     return { success: true, postId: postRef.id };
   } catch (error) {
     console.error('Error creating post:', error);

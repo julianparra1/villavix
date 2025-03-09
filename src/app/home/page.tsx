@@ -4,6 +4,8 @@ import { RightSidebar } from "@/components/right-sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getPosts } from "@/app/actions";
 
+export const dynamic = 'force-dynamic'
+
 export default async function HomeGo() {
   const {posts, hasMore} = await getPosts();
 

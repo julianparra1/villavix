@@ -1,15 +1,12 @@
-import { useState, useEffect, useRef, useCallback } from "react";
-import { PostProps, getPosts } from '@/app/actions';
+"use client";
+import { useEffect, useCallback } from "react";
+import { PostProps } from '@/app/actions';
 import PostComponent from "@/components/post";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
-import { formatDistanceToNow } from 'date-fns';
-import { es } from 'date-fns/locale';
-import Image from 'next/image';
-import { MessageCircle, Heart, Share2, MoreHorizontal, Loader2 } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 import Link from "next/link";
 import { useInView } from "react-intersection-observer";
+import { useRealtimePosts } from '@/lib/useRealtimePosts';
 
 interface PostsListProps {
   initialPosts: PostProps[];
@@ -17,46 +14,25 @@ interface PostsListProps {
 }
 
 export function PostsList({ initialPosts, initialHasMore }: PostsListProps) {
-  const [posts, setPosts] = useState<PostProps[]>(initialPosts);
-  const [hasMore, setHasMore] = useState<boolean>(initialHasMore);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  // Use the real-time hook instead of managing state manually
+  const { posts, hasMore, isLoading, loadMorePosts } = useRealtimePosts(initialPosts);
   
   // Use react-intersection-observer to detect when the loading element is in view
   const { ref, inView } = useInView({
     threshold: 0,
-    // Only trigger once element is visible for 300ms
     delay: 300,
   });
   
-  // Function to load more posts
-  const loadMorePosts = useCallback(async () => {
-    if (isLoading || !hasMore) return;
-    
-    setIsLoading(true);
-    
-    try {
-      // Get the ID of the last post to use as cursor
-      const lastPostId = posts[posts.length - 1]?.id;
-      
-      // Fetch next batch of posts
-      const { posts: newPosts, hasMore: morePostsAvailable } = await getPosts(5, lastPostId);
-      
-      // Update state with new posts
-      setPosts(currentPosts => [...currentPosts, ...newPosts]);
-      setHasMore(morePostsAvailable);
-    } catch (error) {
-      console.error("Error loading more posts:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [posts, hasMore, isLoading]);
-  
   // Load more posts when the loading element comes into view
-  useEffect(() => {
+  const loadMoreOnInView = useCallback(() => {
     if (inView && hasMore && !isLoading) {
       loadMorePosts();
     }
-  }, [inView, loadMorePosts, hasMore, isLoading]);
+  }, [inView, hasMore, isLoading, loadMorePosts]);
+  
+  useEffect(() => {
+    loadMoreOnInView();
+  }, [loadMoreOnInView]);
   
   if (posts.length === 0) {
     return (
@@ -76,9 +52,9 @@ export function PostsList({ initialPosts, initialHasMore }: PostsListProps) {
 
   return (
     <div className="space-y-5 px-4">
-          {posts.map((post) => (
-              <PostComponent key={post.id} {...post}/>
-            ))}
+      {posts.map((post) => (
+        <PostComponent key={`${post.id}-${post.createdAt}`} {...post}/>
+      ))}
       
       {/* Loading indicator - this element triggers the next fetch when it comes into view */}
       {hasMore && (
