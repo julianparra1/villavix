@@ -1,10 +1,12 @@
-'use client';
 import { LeftSidebar } from "@/components/left-sidebar";
-import { MainFeed } from "@/components/main-feed";
+import MainFeed from "@/components/main-feed";
 import { RightSidebar } from "@/components/right-sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { getPosts } from "../actions";
 
-export default function HomeGo() {
+export default async function HomeGo() {
+  const {posts, hasMore} = await getPosts();
+
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex flex-row gap-2 lg:gap-8">
@@ -18,7 +20,7 @@ export default function HomeGo() {
         {/* Main Feed */}
         <div className="flex-1 md:w-1/2">
           <ScrollArea className="border-none h-[85vh] w-full rounded-md border p-4">
-            <MainFeed />
+            <MainFeed initialPosts={posts} hasMore={hasMore} />
           </ScrollArea>
         </div>
         

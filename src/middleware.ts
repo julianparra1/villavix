@@ -5,7 +5,7 @@ import { NextRequest } from 'next/server';
 export async function middleware(request: NextRequest) {
   // Verificar si la ruta actual debe ser protegida
   const pathname = request.nextUrl.pathname;
-  const isProtectedRoute = pathname.startsWith('/protected');
+  const isProtectedRoute = pathname.startsWith('/home');
 
   // Si no es ruta protegida, permitir acceso
   if (!isProtectedRoute) {
@@ -32,6 +32,8 @@ export async function middleware(request: NextRequest) {
     });
 
     if (!verifyResponse.ok) {
+      const loginUrl = new URL('/login', request.nextUrl.origin);
+      NextResponse.redirect(loginUrl);
       throw new Error('Token verification failed');
     }
 
@@ -45,10 +47,3 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 }
-
-export const config = {
-  matcher: [
-    '/protected',
-    '/protected/:path*'
-  ]
-};

@@ -1,4 +1,4 @@
-'use server'
+'use server';
 
 import { adminAuth, adminDb, adminStorage } from '@/lib/firebase/admin';
 import { cookies } from 'next/headers';
@@ -6,14 +6,14 @@ import { revalidatePath } from 'next/cache';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
 
 // Type for post data
-export interface Post {
+export interface PostProps {
   id: string;
   title: string;
-  content: string;
-  imageUrl?: string;
-  authorId: string;
   authorName: string;
-  authorEmail: string;
+  imageuser: string;
+  imageUrl?: string | null;
+  content: string;
+  hashtags?: string[] | null;
   createdAt: string;
 }
 
@@ -87,12 +87,20 @@ export async function createPost(formData: FormData) {
 
     // Add post to Firestore using Admin SDK
     const postRef = adminDb.collection('posts').doc();
-    await postRef.set({
+    const post: PostProps = {
+      id: postRef.id,
       title,
-      content,
-      imageUrl: imageUrl || null,
-      authorId: decodedClaims.uid,
       authorName: decodedClaims.name || 'Usuario',
+      imageuser: '', // Add appropriate value
+      imageUrl: imageUrl || null,
+      content: content,
+      hashtags: ["test"], // Add appropriate value
+      createdAt: new Date().toISOString() // This will be updated with server timestamp
+    };
+
+    await postRef.set({
+      ...post,
+      authorId: decodedClaims.uid,
       authorEmail: decodedClaims.email,
       createdAt: FieldValue.serverTimestamp()
     });
@@ -106,32 +114,62 @@ export async function createPost(formData: FormData) {
   }
 }
 
-// Server action to fetch posts using Admin SDK
-export async function getPosts() {
+export async function getPosts(limit = 5, lastPostId?: string) {
   try {
-    const postsSnapshot = await adminDb.collection('posts')
+    let query = adminDb.collection('posts')
       .orderBy('createdAt', 'desc')
-      .get();
+      .limit(limit);
+      
+    if (lastPostId) {
+      const lastDoc = await adminDb.collection('posts').doc(lastPostId).get();
+      if (lastDoc.exists) {
+        query = query.startAfter(lastDoc);
+      }
+    }
+    
+    const postsSnapshot = await query.get();
+    const hasMore = postsSnapshot.docs.length === limit;
     
     const posts = postsSnapshot.docs.map(doc => {
       const data = doc.data();
+      
+      // Handle different types of createdAt field
+      let createdAtISO;
+      if (!data.createdAt) {
+        createdAtISO = new Date().toISOString();
+      } else if (typeof data.createdAt.toDate === 'function') {
+        // It's a Firestore timestamp
+        createdAtISO = data.createdAt.toDate().toISOString();
+      } else if (data.createdAt instanceof Date) {
+        // It's a JavaScript Date
+        createdAtISO = data.createdAt.toISOString();
+      } else if (typeof data.createdAt === 'string') {
+        // It's already a string
+        createdAtISO = data.createdAt;
+      } else if (typeof data.createdAt === 'object' && data.createdAt._seconds !== undefined) {
+        // It's a Firestore timestamp in serialized form
+        createdAtISO = new Date(data.createdAt._seconds * 1000).toISOString();
+      } else {
+        // Fallback
+        createdAtISO = new Date().toISOString();
+      }
+
       return {
         id: doc.id,
-        title: data.title,
-        content: data.content,
-        imageUrl: data.imageUrl,
-        authorId: data.authorId,
+        title: data.title || '',
         authorName: data.authorName || 'Usuario',
-        authorEmail: data.authorEmail,
-        // Convert Firestore Timestamp to ISO string, handling potential null values
-        createdAt: data.createdAt ? data.createdAt.toDate().toISOString() : new Date().toISOString()
-      } as Post;
+        imageuser: '',
+        imageUrl: data.imageUrl || null,
+        content: data.content || '',
+        hashtags: Array.isArray(data.hashtags) ? [...data.hashtags] : [],
+        createdAt: createdAtISO
+      };
     });
     
-    return posts;
+    return { posts, hasMore };
   } catch (error) {
     console.error('Error fetching posts:', error);
-    return [];
+    return { posts: [], hasMore: false };
   }
 }
 
@@ -154,13 +192,13 @@ export async function getUserPosts() {
       return {
         id: doc.id,
         title: data.title,
-        content: data.content,
-        imageUrl: data.imageUrl,
-        authorId: data.authorId,
         authorName: data.authorName || 'Usuario',
-        authorEmail: data.authorEmail,
+        imageuser: '', // Add appropriate value
+        imageUrl: data.imageUrl || null,
+        content: data.content,
+        hashtags: [], // Add appropriate value
         createdAt: data.createdAt ? data.createdAt.toDate().toISOString() : new Date().toISOString()
-      } as Post;
+      } as PostProps;
     });
     
     return posts;

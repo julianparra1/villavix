@@ -2,7 +2,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ModeToggle } from "@/components/toggle";
 import { Button } from "@/components/ui/button";
-import useAuth from "@/lib/hooks/useAuth";
+import useAuth from "@/lib/useAuth";
 import { getAuth, signOut } from "firebase/auth";
 import { UserCircle, LogOut, Settings } from "lucide-react";
 import {
@@ -41,9 +41,7 @@ export default function Header() {
       </div>
       <div className="flex items-center gap-6">
         <nav className="hidden md:flex space-x-6">
-          <Link href="#features" className="text-gray-600 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition">Características</Link>
-          <Link href="#testimonials" className="text-gray-600 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition">Testimonios</Link>
-          <Link href="#how-it-works" className="text-gray-600 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition">Cómo Funciona</Link>
+          <Link href="/home" className="text-gray-600 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition">Posts</Link>
         </nav>
         
         {loading ? (

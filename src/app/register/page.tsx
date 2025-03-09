@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { authService } from '@/lib/auth';
+import { authService } from '@/lib/firebase/auth';
 import { Eye, EyeOff } from "lucide-react"
 import { Button } from "@/components/ui/button";
 import {

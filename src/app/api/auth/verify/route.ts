@@ -1,3 +1,4 @@
+"server-only";
 import { NextResponse } from 'next/server';
 import { adminAuth } from '@/lib/firebase/admin'; // Note: no DB needed if using custom claims
 
@@ -19,7 +20,7 @@ export async function POST(request: Request) {
     const userRole = decodedToken.role;
 
     // Check if the user's role is either admin or funcionario
-    if (!userRole || !['admin', 'funcionario'].includes(userRole)) {
+    if (!userRole || !['admin', 'ciudadano'].includes(userRole)) {
       console.error('Unauthorized role for:', decodedToken, 'Role:', userRole);
       return NextResponse.json(
         { valid: false, error: 'Unauthorized role' },

@@ -1,4 +1,4 @@
-import { db } from '@/lib/firebase/config';
+import { db } from '@/lib/firebase/clientApp';
 import { doc, getDoc } from 'firebase/firestore';
 
 export const getUserRole = async (userId: string): Promise<string | null> => {

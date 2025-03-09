@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { authService } from '@/lib/auth';
+import { authService } from '@/lib/firebase/auth';
 import { Button } from "@/components/ui/button";
 import { Eye, EyeOff } from "lucide-react"
 import {
@@ -36,7 +36,7 @@ function LoginPage() {
     try {
       const { token } = await authService.login(email, password);
       document.cookie = `sessionToken=${token}; path=/`;      
-      router.push('/');
+      router.push('/home');
     } catch (err: any) {
       setError(err.message);
     } finally {
