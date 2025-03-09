@@ -141,8 +141,7 @@ export function NewPost() {
           setImagePreview(null);
           setIsDialogOpen(false);
           
-          // Redirect to dashboard
-          router.push('/dashboard');
+          router.push('/home');
           router.refresh();
         }
       } catch (error) {
