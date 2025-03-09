@@ -23,7 +23,8 @@ export async function middleware(request: NextRequest) {
 
   try {
     // Verificar token en el API route
-    const verifyResponse = await fetch(`${request.nextUrl.origin}/api/auth/verify`, {
+    console.log("CCC: " + request.nextUrl.host)
+    const verifyResponse = await fetch(`http://${request.nextUrl.host}/api/auth/verify`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

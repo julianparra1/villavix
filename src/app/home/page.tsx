@@ -2,7 +2,7 @@ import { LeftSidebar } from "@/components/left-sidebar";
 import MainFeed from "@/components/main-feed";
 import { RightSidebar } from "@/components/right-sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { getPosts } from "../actions";
+import { getPosts } from "@/app/actions";
 
 export default async function HomeGo() {
   const {posts, hasMore} = await getPosts();
