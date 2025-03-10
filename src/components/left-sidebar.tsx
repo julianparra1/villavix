@@ -2,14 +2,19 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { User, Settings, Activity, Users, LogOut } from "lucide-react";
+import { User, Settings, Activity, Users, LogOut, NotebookText } from "lucide-react";
+import { getAuth, signOut } from "firebase/auth";
 
 export function LeftSidebar() {
-  const handleLogout = () => {
-    // Implementar lógica de cierre de sesión aquí
-    console.log("Cerrando sesión...")
-  }
-
+  
+const handleSignOut = async () => {
+    const auth = getAuth();
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
   return (
     <div className="flex flex-col h-full space-y-4">
       <Link href="/profile">
@@ -30,6 +35,12 @@ export function LeftSidebar() {
           Actividad
         </Button>
       </Link>
+      <Link href="/resumenes">
+        <Button variant="ghost" className="w-full justify-start">
+          <NotebookText className="mr-2 h-4 w-4" />
+          Resumenes
+        </Button>
+      </Link>
       <Link href="/officials">
         <Button variant="ghost" className="w-full justify-start">
           <Users className="mr-2 h-4 w-4" />
@@ -39,8 +50,9 @@ export function LeftSidebar() {
       <Button 
         variant="ghost" 
         className="w-full justify-start mt-auto px-3" 
-        onClick={handleLogout}
-      >
+        onClick={handleSignOut}
+      > 
+        
         <LogOut className="mr-2 h-4 w-4" />
         Cerrar sesión
       </Button>

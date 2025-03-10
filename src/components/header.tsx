@@ -31,17 +31,17 @@ export default function Header() {
     <header className="container mx-auto px-4 py-6 flex justify-between items-center bg-white/80 dark:bg-transparent backdrop-blur-sm">
       <div className="flex items-center gap-2">
         <Image
-          src="/logo.svg"
+          src="/logo2.2.svg"
           alt="Logo"
-          width={40}
-          height={40}
+          width={50}
+          height={50}
           className="fill-indigo-700 dark:invert"
         />
-        <span className="font-bold text-xl">VillaVix</span>
+        <span className="font-ebgaramond font-medium text-xl">VillaVix</span>
       </div>
       <div className="flex items-center gap-6">
         <nav className="hidden md:flex space-x-6">
-          <Link href="/home" className="text-gray-600 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition">Posts</Link>
+          <Link href="/home" className="text-gray-600 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-400 transition">Posts</Link>
         </nav>
         
         {loading ? (
@@ -94,8 +94,8 @@ export default function Header() {
             <Link href={`/login`}>
               <Button variant="outline" className="hidden md:flex">Iniciar Sesión</Button>
             </Link>
-            <Link href={`/register`}>
-              <Button className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-700 dark:hover:bg-indigo-800">Registrarse</Button>
+            <Link href={`/page`}>
+              <Button variant="outline" className="hidden md:flex">Registrarse</Button>
             </Link>
           </>
         )}

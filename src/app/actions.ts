@@ -4,13 +4,19 @@ import { adminAuth, adminDb, adminStorage } from '@/lib/firebase/admin';
 import { cookies } from 'next/headers';
 import { revalidatePath } from 'next/cache';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import { remark } from 'remark';
+import html from 'remark-html';
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
+const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-001" });
 
 // Type for post data
 export interface PostProps {
   id: string;
   title: string;
   authorName: string;
-  imageuser: string;
+  imageuser?: string | null;
   imageUrl?: string | null;
   content: string;
   hashtags?: string[] | null;
@@ -134,7 +140,7 @@ export async function getPosts(limit = 5, lastPostId?: string) {
       
       // Handle different types of createdAt field
       let createdAtISO;
-      if (!data.createdAt) {
+      if (!data || !data.createdAt) {
         createdAtISO = new Date().toISOString();
       } else if (typeof data.createdAt.toDate === 'function') {
         // It's a Firestore timestamp
@@ -153,6 +159,168 @@ export async function getPosts(limit = 5, lastPostId?: string) {
         createdAtISO = new Date().toISOString();
       }
 
+      return {
+        id: doc.id,
+        title: data?.title || '',
+        authorName: data.authorName || 'Usuario',
+        imageuser: '',
+        imageUrl: data.imageUrl || null,
+        content: data.content || '',
+        hashtags: Array.isArray(data.hashtags) ? [...data.hashtags] : [],
+        createdAt: createdAtISO
+      };
+    });
+    
+    return { posts, hasMore };
+  } catch (error) {
+    console.error('Error fetching posts:', error);
+    return { posts: [], hasMore: false };
+  }
+}
+
+export async function getRecentPostsWithSummary(limit = 5, lastPostId?: string) {
+  try {
+    // Calcular la fecha de hace 2 días
+    const twoDaysAgo = new Date();
+    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+    
+    // Iniciar la consulta base con el filtro de fecha
+    let query = adminDb.collection('posts')
+      .where('createdAt', '>=', twoDaysAgo)
+      .orderBy('createdAt', 'desc');    
+    // Aplicar paginación si se proporciona un lastPostId
+    if (lastPostId) {
+      const lastDoc = await adminDb.collection('posts').doc(lastPostId).get();
+      if (lastDoc.exists) {
+        query = query.startAfter(lastDoc);
+      }
+    }
+    
+    const postsSnapshot = await query.get();
+    const hasMore = postsSnapshot.docs.length === limit;
+    
+    // Procesar los posts
+    const posts = postsSnapshot.docs.map(doc => {
+      const data = doc.data();
+      
+      // Manejar diferentes tipos de createdAt
+      let createdAtISO;
+      if (!data || !data.createdAt) {
+        createdAtISO = new Date().toISOString();
+      } else if (typeof data.createdAt.toDate === 'function') {
+        createdAtISO = data.createdAt.toDate().toISOString();
+      } else if (data.createdAt instanceof Date) {
+        createdAtISO = data.createdAt.toISOString();
+      } else if (typeof data.createdAt === 'string') {
+        createdAtISO = data.createdAt;
+      } else if (typeof data.createdAt === 'object' && data.createdAt._seconds !== undefined) {
+        createdAtISO = new Date(data.createdAt._seconds * 1000).toISOString();
+      } else {
+        createdAtISO = new Date().toISOString();
+      }
+      
+      return {
+        id: doc.id,
+        title: data.title || '',
+        authorName: data.authorName || 'Usuario',
+        imageuser: '',
+        imageUrl: data.imageUrl || null,
+        content: data.content || '',
+        hashtags: Array.isArray(data.hashtags) ? [...data.hashtags] : [],
+        createdAt: createdAtISO
+      };
+    });
+    
+    // Generar un resumen general solo si hay posts
+    let generalSummary = '';
+    let contentHtml = '';
+    if (posts.length > 0) {
+      try {
+        const postSeparator = "@@@";
+        const prompt = `
+          Eres un asistente de IA que ayuda a los funcionarios de gobierno en una comunidad en línea que conecta con las quejas de los ciudadanos.
+          No incluyas titulos.
+          Basado en los siguientes posts recientes, 
+          donde cada post está separado por un '${postSeparator}' carácter, 
+          crea un resumen conciso donde incluyas los puntos clave de las quejas (en forma de puntos) de los usuarios que capturen los temas principales discutidos. Evita usar expresiones como "en resumen" o "en conclusión".
+          
+          Aquí están los posts: ${posts.map(post => 
+            `TÍTULO: ${post.title} 
+             CONTENIDO: ${post.content}`
+          ).join(postSeparator)}
+        `;
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        generalSummary = response.text();
+
+        const processedContent = await remark()
+          .use(html)
+          .process(generalSummary);
+        if (processedContent){
+          contentHtml = processedContent.toString();
+        }
+        
+      } catch (error) {
+        console.error('Error generando resumen con Gemini:', error);
+        generalSummary = 'No se pudo generar un resumen automático.';
+      }
+    } else {
+      generalSummary = 'No hay publicaciones recientes para resumir.';
+    }
+    
+    return { posts, hasMore, contentHtml};
+  } catch (error) {
+    console.error('Error fetching posts or generating summary:', error);
+    return { posts: [], hasMore: false, generalSummary: 'Error al procesar las publicaciones recientes.' };
+  }
+}
+
+export async function getRecentPosts(limit = 5, lastPostId?: string) {
+  try {
+    // Calcular la fecha de hace 2 días
+    const twoDaysAgo = new Date();
+    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+    
+    // Iniciar la consulta base con el filtro de fecha
+    let query = adminDb.collection('posts')
+      .where('createdAt', '>=', twoDaysAgo)  // Filtrar posts de los últimos 2 días
+      .orderBy('createdAt', 'desc')
+      .limit(limit);
+    
+    // Aplicar paginación si se proporciona un lastPostId
+    if (lastPostId) {
+      const lastDoc = await adminDb.collection('posts').doc(lastPostId).get();
+      if (lastDoc.exists) {
+        query = query.startAfter(lastDoc);
+      }
+    }
+    
+    const postsSnapshot = await query.get();
+    const hasMore = postsSnapshot.docs.length === limit;
+    
+    const posts = postsSnapshot.docs.map(doc => {
+      const data = doc.data();
+      // Handle different types of createdAt field
+      let createdAtISO;
+      if (!data.createdAt) {
+        createdAtISO = new Date().toISOString();
+      } else if (typeof data.createdAt.toDate === 'function') {
+        // It's a Firestore timestamp
+        createdAtISO = data.createdAt.toDate().toISOString();
+      } else if (data.createdAt instanceof Date) {
+        // It's a JavaScript Date
+        createdAtISO = data.createdAt.toISOString();
+      } else if (typeof data.createdAt === 'string') {
+        // It's already a string
+        createdAtISO = data.createdAt;
+      } else if (typeof data.createdAt === 'object' && data.createdAt._seconds !== undefined) {
+        // It's a Firestore timestamp in serialized form
+        createdAtISO = new Date(data.createdAt._seconds * 1000).toISOString();
+      } else {
+        // Fallback
+        createdAtISO = new Date().toISOString();
+      }
+      
       return {
         id: doc.id,
         title: data.title || '',
@@ -204,5 +372,155 @@ export async function getUserPosts() {
   } catch (error) {
     console.error('Error fetching user posts:', error);
     return [];
+  }
+}
+
+// Pin a post (add to user's pinnedPosts array)
+export async function pinPost(postId: string) {
+  try {
+    const sessionCookie = (await cookies()).get('sessionToken')?.value;
+    if (!sessionCookie) {
+      return { success: false, message: "User not authenticated" };
+    }
+
+    const decodedClaims = await adminAuth.verifyIdToken(sessionCookie);
+    const userDocRef = adminDb.collection('users').doc(decodedClaims.uid);
+    
+    // Get current user document
+    const userDoc = await userDocRef.get();
+    
+    // Create the user document if it doesn't exist
+    if (!userDoc.exists) {
+      await userDocRef.set({
+        email: decodedClaims.email,
+        name: decodedClaims.name || 'Usuario',
+        pinnedPosts: [postId]
+      });
+    } else {
+      // Update existing document by adding postId to pinnedPosts array
+      await userDocRef.update({
+        pinnedPosts: FieldValue.arrayUnion(postId)
+      });
+    }
+    
+    return { success: true, message: "Post pinned successfully" };
+  } catch (error) {
+    console.error("Error pinning post:", error);
+    return { success: false, message: "Failed to pin post" };
+  }
+}
+
+// Unpin a post (remove from user's pinnedPosts array)
+export async function unpinPost(postId: string) {
+  try {
+    const sessionCookie = (await cookies()).get('sessionToken')?.value;
+    if (!sessionCookie) {
+      return { success: false, message: "User not authenticated" };
+    }
+
+    const decodedClaims = await adminAuth.verifyIdToken(sessionCookie);
+    const userDocRef = adminDb.collection('users').doc(decodedClaims.uid);
+    
+    // Remove postId from pinnedPosts array
+    await userDocRef.update({
+      pinnedPosts: FieldValue.arrayRemove(postId)
+    });
+    
+    return { success: true, message: "Post unpinned successfully" };
+  } catch (error) {
+    console.error("Error unpinning post:", error);
+    return { success: false, message: "Failed to unpin post" };
+  }
+}
+
+// Check if a post is pinned by current user
+export async function isPostPinned(postId: string) {
+  try {
+    const sessionCookie = (await cookies()).get('sessionToken')?.value;
+    if (!sessionCookie) {
+      return false;
+    }
+
+    const decodedClaims = await adminAuth.verifyIdToken(sessionCookie);
+    const userDocRef = adminDb.collection('users').doc(decodedClaims.uid);
+    const userDoc = await userDocRef.get();
+    
+    if (userDoc.exists) {
+      const userData = userDoc.data();
+      return userData && userData.pinnedPosts && userData.pinnedPosts.includes(postId);
+    }
+    
+    return false;
+  } catch (error) {
+    console.error("Error checking pinned status:", error);
+    return false;
+  }
+}
+
+// Get all pinned posts for current user
+export async function getPinnedPosts() {
+  try {
+    const sessionCookie = (await cookies()).get('sessionToken')?.value;
+    if (!sessionCookie) {
+      return { posts: [], success: false };
+    }
+
+    const decodedClaims = await adminAuth.verifyIdToken(sessionCookie);
+    const userDocRef = adminDb.collection('users').doc(decodedClaims.uid);
+    const userDoc = await userDocRef.get();
+    
+    if (!userDoc.exists || !userDoc.data()?.pinnedPosts) {
+      return { posts: [], success: true };
+    }
+    
+    const userData = userDoc.data();
+    const pinnedPostIds = userData ? userData.pinnedPosts : [];
+    
+    if (pinnedPostIds.length === 0) {
+      return { posts: [], success: true };
+    }
+    
+    // Get the actual posts from their IDs
+    const postsPromises = pinnedPostIds.map(async (id: string) => {
+      const postDoc = await adminDb.collection('posts').doc(id).get();
+      if (!postDoc.exists) return null;
+      
+      const data = postDoc.data();
+      let createdAtISO;
+      
+      if (!data || !data.createdAt) {
+        createdAtISO = new Date().toISOString();
+      } else if (typeof data.createdAt.toDate === 'function') {
+        createdAtISO = data.createdAt.toDate().toISOString();
+      } else if (data.createdAt instanceof Date) {
+        createdAtISO = data.createdAt.toISOString();
+      } else if (typeof data.createdAt === 'string') {
+        createdAtISO = data.createdAt;
+      } else if (typeof data.createdAt === 'object' && data.createdAt._seconds !== undefined) {
+        createdAtISO = new Date(data.createdAt._seconds * 1000).toISOString();
+      } else {
+        createdAtISO = new Date().toISOString();
+      }
+      
+      return {
+        id: postDoc.id,
+        title: data?.title || '',
+        authorName: data?.authorName || 'Usuario',
+        imageuser: '',
+        imageUrl: data?.imageUrl || null,
+        content: data?.content || '',
+        hashtags: Array.isArray(data?.hashtags) ? [...data.hashtags] : [],
+        createdAt: createdAtISO,
+        isPinned: true
+      };
+    });
+    
+    const postsResults = await Promise.all(postsPromises);
+    const posts = postsResults.filter(post => post !== null);
+    
+    return { posts, success: true };
+  } catch (error) {
+    console.error("Error getting pinned posts:", error);
+    return { posts: [], success: false };
   }
 }

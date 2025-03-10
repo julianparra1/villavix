@@ -38,7 +38,11 @@ const formSchema = z.object({
   }),
   content: z.string().min(10, {
     message: "El contenido debe tener al menos 10 caracteres.",
-  })
+  }),
+  hashtags: z
+    .array(z.string().min(1, { message: "Cada hashtag debe tener al menos 1 carácter." }))
+    .max(3, { message: "No puedes agregar más de 3 hashtags." })
+    .optional(),
 });
 
 interface CreatePostFormProps {
@@ -60,6 +64,7 @@ export function NewPost() {
       defaultValues: {
         title: "",
         content: "",
+        hashtags: [],
       },
     });
   
@@ -125,7 +130,6 @@ export function NewPost() {
         }
         
         const result = await createPost(postFormData);
-        
         if (result.error) {
           toast.error("Error al crear la publicación", {
             description: result.error,
@@ -153,6 +157,75 @@ export function NewPost() {
         setIsUploading(false);
       }
     };
+
+    // Añade estos estados en la componente NewPost, justo después de los otros estados
+const [hashtagInput, setHashtagInput] = useState("");
+const [formattedHashtags, setFormattedHashtags] = useState<React.ReactNode[]>([]);
+
+// Función para manejar los cambios en los hashtags
+const handleHashtagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const inputValue = e.target.value;
+  setHashtagInput(inputValue);
+  
+  // Procesar los hashtags cuando se escribe un espacio
+  if (inputValue.endsWith(' ') && inputValue.trim() !== '') {
+    const inputText = inputValue.trim();
+    const hashtagsArray = inputText.split(' ').filter(tag => tag.startsWith('#') && tag.length > 1);
+    
+    // Limitar a 3 hashtags
+    const limitedHashtags = hashtagsArray.slice(0, 3);
+    
+    // Actualizar el valor en el formulario
+    form.setValue('hashtags', limitedHashtags);
+    
+    // Crear elementos formateados para mostrar
+    const formatted = limitedHashtags.map((tag, index) => (
+      <span key={index} className="font-semibold text-primary">
+        {tag}{index < limitedHashtags.length - 1 ? ' ' : ''}
+      </span>
+    ));
+    
+    setFormattedHashtags(formatted);
+    
+    // Mostrar alerta con el contenido del arreglo de hashtags
+    toast.info("Hashtags actuales", {
+      description: limitedHashtags.length > 0 
+        ? `Hashtags: ${limitedHashtags.join(', ')}` 
+        : "No hay hashtags añadidos",
+    });
+    
+    // Si ya tenemos 3 hashtags, mostrar un toast de advertencia
+    if (hashtagsArray.length > 3) {
+      toast.warning("Límite de hashtags", {
+        description: "Solo se permiten hasta 3 hashtags.",
+      });
+    }
+  }
+};
+
+// Función para eliminar un hashtag
+const removeHashtag = (indexToRemove: number) => {
+  const currentHashtags = form.getValues('hashtags') || [];
+  const updatedHashtags = currentHashtags.filter((_, index) => index !== indexToRemove);
+  form.setValue('hashtags', updatedHashtags);
+  
+  // Actualizar la visualización
+  const formatted = updatedHashtags.map((tag, index) => (
+    <span key={index} className="font-semibold text-primary">
+      {tag}{index < updatedHashtags.length - 1 ? ' ' : ''}
+    </span>
+  ));
+  
+  setFormattedHashtags(formatted);
+  setHashtagInput(updatedHashtags.join(' ') + ' ');
+  
+  // Mostrar alerta con el contenido actualizado del arreglo
+  toast.info("Hashtags actualizados", {
+    description: updatedHashtags.length > 0 
+      ? `Hashtags: ${updatedHashtags.join(', ')}` 
+      : "Se han eliminado todos los hashtags",
+  });
+};
   
     return (
       <div className='w-full px-4'>
@@ -190,7 +263,48 @@ export function NewPost() {
                           </FormItem>
                         )}
                       />
-                      
+
+<FormField
+  control={form.control}
+  name="hashtags"
+  render={({ field }) => (
+    <FormItem>
+      <FormLabel className="text-base font-medium">Hashtags</FormLabel>
+      <FormControl>
+        <div className="flex flex-wrap items-center border rounded-md p-2 focus-within:ring-0 focus-within:ring-offset-0">
+          {(form.getValues('hashtags') || []).map((tag, index) => (
+            <div key={index} className="bg-primary/10 text-primary rounded-full px-3 py-1 m-1 flex items-center">
+              <span className="font-semibold">{tag}</span>
+              <button
+                type="button"
+                onClick={() => removeHashtag(index)}
+                className="ml-2 text-primary hover:text-primary/80"
+                disabled={isUploading}
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </div>
+          ))}
+          
+          {(form.getValues('hashtags') || []).length < 3 && (
+            <Input
+              placeholder={(form.getValues('hashtags') || []).length === 0 ? "#Ejemplo #Localidad #Tema" : "Añadir hashtag..."}
+              value={hashtagInput}
+              onChange={handleHashtagsChange}
+              className="flex-grow border-none shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 p-1"
+              disabled={isUploading}
+            />
+          )}
+        </div>
+      </FormControl>
+      <FormDescription>
+        Escribe hasta 3 hashtags separados por espacios.
+      </FormDescription>
+      <FormMessage />
+    </FormItem>
+  )}
+/>
+
                       <FormField
                         control={form.control}
                         name="content"

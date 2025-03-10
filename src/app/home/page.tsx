@@ -1,8 +1,10 @@
 import { LeftSidebar } from "@/components/left-sidebar";
-import MainFeed from "@/components/main-feed";
+import Feed from "@/components/main-feed";
 import { RightSidebar } from "@/components/right-sidebar";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { getPosts } from "@/app/actions";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { NewPost } from "@/components/newpost";
 
 export const dynamic = 'force-dynamic'
 
@@ -22,15 +24,20 @@ export default async function HomeGo() {
         {/* Main Feed */}
         <div className="flex-1 md:w-1/2">
           <ScrollArea className="border-none h-[85vh] w-full rounded-md border p-4">
-            <MainFeed initialPosts={posts} hasMore={hasMore} />
+            <div className="flex items-center space-x-4 w-full pl-4 pb-4">
+              <Avatar>
+                <AvatarImage src="/placeholder-avatar.jpg" alt="@username" />
+                <AvatarFallback>UN</AvatarFallback>
+              </Avatar>
+              <NewPost/>
+            </div>
+            <Feed initialPosts={posts} hasMore={hasMore} />
           </ScrollArea>
         </div>
         
         {/* Right Sidebar */}
         <div className="flex-1 md:flex-none md:w-1/4 ">
           <ScrollArea className="border-none rounded-md border h-[85vh]">
-            
-          <RightSidebar />
           <RightSidebar />
           </ScrollArea>
         </div>
