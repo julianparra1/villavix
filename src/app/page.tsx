@@ -97,50 +97,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section id="testimonials" className="container mx-auto px-4 py-24 bg-gray-50 dark:bg-gray-900/50">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900 dark:text-white">Opiniones de Usuarios</h2>
-          <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-            Descubre cómo VillaVix está transformando la relación ciudadano-funcionario
-          </p>
-        </div>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {[
-            {
-              quote: "Gracias a la plataforma, mi reporte fue atendido en menos de una semana. La comunicación directa con los funcionarios es excelente.",
-              author: "Carolina Martínez",
-              role: "Ciudadana"
-            },
-            {
-              quote: "Como funcionario público, esta herramienta me ha permitido organizar mejor mi trabajo y atender más eficientemente las necesidades de los ciudadanos.",
-              author: "Roberto Gómez",
-              role: "Director de Servicios Públicos"
-            }
-          ].map((testimonial, i) => (
-            <Card key={i} className="bg-white border-gray-100 dark:bg-gray-800/30 dark:border-gray-700">
-              <CardContent className="pt-6">
-                <div className="flex mb-4">
-                  {Array(5).fill(0).map((_, i) => (
-                    <StarIcon key={i} className="h-5 w-5 text-yellow-500" />
-                  ))}
-                </div>
-                <p className="text-gray-700 dark:text-gray-300 mb-6 italic">&quot;{testimonial.quote}&quot;</p>
-                <div className="flex items-center gap-4">
-                  <div className="h-12 w-12 rounded-full bg-indigo-100 dark:bg-indigo-600/30 flex items-center justify-center text-indigo-700 dark:text-indigo-300">
-                    {testimonial.author.charAt(0)}
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">{testimonial.author}</p>
-                    <p className="text-gray-500 dark:text-gray-400 text-sm">{testimonial.role}</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </section>
+      
 
       {/* CTA Section */}
       <section className="container mx-auto px-4 py-24">

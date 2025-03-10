@@ -98,7 +98,7 @@ export default function Post({
           <div className="flex items-center ml-6 space-x-6">
 
             <Avatar className="w-10 h-10">
-              <AvatarImage src={imageuser} />
+              <AvatarImage src={imageuser as string} />
               <AvatarFallback>JP</AvatarFallback>
             </Avatar>
             <span className="font-semibold not-italic">{authorName}</span>
