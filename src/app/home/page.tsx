@@ -29,8 +29,6 @@ export default async function HomeGo() {
         {/* Right Sidebar */}
         <div className="flex-1 md:flex-none md:w-1/4 ">
           <ScrollArea className="border-none rounded-md border h-[85vh]">
-            
-          <RightSidebar />
           <RightSidebar />
           </ScrollArea>
         </div>

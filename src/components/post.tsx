@@ -6,8 +6,10 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "./ui/button";
 import Link from "next/link";
 import { PostProps } from "@/app/actions";
+import { Pin } from "lucide-react";
 
 export default function Post({
+  id,
   title,
   authorName,
   imageuser,
@@ -24,17 +26,25 @@ export default function Post({
   const shouldTruncate = words.length > 40;
   const truncatedText = shouldTruncate ? words.slice(0, 40).join(" ") + "..." : content;
 
+  const handlePinPost = () => {
+    alert(`Post fijado con ID: ${id}`);
+  };
+
   return (
     <Card className="w-full gap-2 mx-auto">
       <CardHeader>
-        <div className="flex items-center space-x-4">
-            <Avatar className="w-10 h-10">
-              <AvatarImage src={imageuser}/>
-              <AvatarFallback>JP</AvatarFallback>
-            </Avatar>
-            <span className="font-semibold not-italic">{authorName}</span>
+      <div className="flex items-center space-x-4">
+          <Avatar className="w-10 h-10">
+            <AvatarImage src={imageuser} />
+            <AvatarFallback>JP</AvatarFallback>
+          </Avatar>
+          <span className="font-semibold not-italic">{authorName}</span>
           <Button size="sm" variant="outline" className="border-gray-300 dark:border-gray-700">
             Seguir
+          </Button>
+          <div className="flex-grow"></div>
+          <Button size="icon" variant="ghost" onClick={handlePinPost}>
+            <Pin className="w-5 h-5" />
           </Button>
         </div>
       </CardHeader>
