@@ -145,12 +145,18 @@ export default function HomePage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col md:flex-row items-center justify-center gap-4">
+            
+            <Link href={`/register`}>
             <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-700 dark:hover:bg-indigo-800 w-full md:w-auto">
               Crear Cuenta Ciudadano
             </Button>
+            </Link>
+            
+            <Link href={`/refunc`}>
             <Button size="lg" variant="outline" className="w-full md:w-auto text-indigo-600 border-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:border-indigo-400 dark:hover:bg-indigo-950/30">
               Acceso para Funcionarios
             </Button>
+            </Link>
           </CardContent>
           <CardFooter className="text-center text-gray-500 dark:text-gray-400 text-sm">
             Registro gratuito para ciudadanos. Verificación requerida para funcionarios.
@@ -164,12 +170,12 @@ export default function HomePage() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center gap-2 mb-6 md:mb-0">
               <Image
-                src="/logo.svg"
+                src="/logo2.2.svg"
                 alt="Logo"
                 width={30}
                 height={30}
               />
-              <span className="font-bold text-lg text-gray-900 dark:text-white">VillaVix</span>
+              <span className="font-ebgaramond font-medium text-xl">VillaVix</span>
             </div>
             <div className="flex gap-6">
               <Link href="#" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition">Privacidad</Link>

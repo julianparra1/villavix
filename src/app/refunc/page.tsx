@@ -144,6 +144,16 @@ export default function RegisterPage() {
               </Select>
             </div>
             <div className="space-y-2">
+              <Label htmlFor="puesto">Puesto</Label>
+              <Input
+                id="puesto"
+                name="puesto"
+                type="text"
+                placeholder="Escribe tu puesto"
+                required
+              />
+            </div>
+            <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
