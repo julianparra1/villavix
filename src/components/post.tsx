@@ -7,7 +7,7 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { PostProps } from "@/app/actions";
 import { Pin } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import Image from "next/image";import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function Post({
@@ -42,7 +42,7 @@ export default function Post({
           <CardHeader>
             <div className="flex items-center space-x-4">
               <Avatar className="w-10 h-10">
-                <AvatarImage src={imageuser} />
+                <AvatarImage src={imageuser as string} />
                 <AvatarFallback>JP</AvatarFallback>
               </Avatar>
               <span className="font-semibold not-italic">{authorName}</span>
@@ -67,9 +67,11 @@ export default function Post({
             )}
             {imageUrl && (
               <div className="mt-4">
-                <img
+                <Image
                   src={imageUrl}
-                  alt="Imagen del post"
+                  alt={title}
+              width={500}
+              height={300}
                   className="w-full max-h-[400px] object-cover rounded"
                 />
               </div>

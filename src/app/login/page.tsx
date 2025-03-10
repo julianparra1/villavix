@@ -36,11 +36,11 @@ function LoginPage() {
     try {
       const { token } = await authService.login(email, password);
       document.cookie = `sessionToken=${token}; path=/`;      
-      router.push('/home');
     } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
+      return router.push('/home');
     };
   };
 

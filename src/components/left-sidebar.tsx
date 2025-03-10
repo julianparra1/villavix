@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { User, Settings, Activity, Users, LogOut } from "lucide-react";
+import { User, Settings, Activity, Users, LogOut, NotebookText } from "lucide-react";
 import { getAuth, signOut } from "firebase/auth";
 
 export function LeftSidebar() {
@@ -33,6 +33,12 @@ const handleSignOut = async () => {
         <Button variant="ghost" className="w-full justify-start">
           <Activity className="mr-2 h-4 w-4" />
           Actividad
+        </Button>
+      </Link>
+      <Link href="/resumenes">
+        <Button variant="ghost" className="w-full justify-start">
+          <NotebookText className="mr-2 h-4 w-4" />
+          Resumenes
         </Button>
       </Link>
       <Link href="/officials">
