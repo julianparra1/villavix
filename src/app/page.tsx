@@ -18,8 +18,8 @@ export default function HomePage() {
     <div>  
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-24 flex flex-col items-center text-center">
-        <Badge className="mb-4 bg-indigo-100 dark:bg-indigo-900/30 text-indigo-800 dark:text-indigo-400 hover:bg-indigo-200 dark:hover:bg-indigo-900/50">✨ Nueva Plataforma</Badge>
-        <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight text-gray-900 dark:text-white">
+      <Badge className="mb-4 bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-900/50">✨ Nueva Plataforma</Badge>
+      <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight text-gray-900 dark:text-white">
           Conectando Ciudadanos y Funcionarios
         </h1>
         <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mb-10">
@@ -27,25 +27,32 @@ export default function HomePage() {
           permitiendo reportar quejas y dar seguimiento a soluciones para mejorar nuestra comunidad.
         </p>
         <div className="flex flex-wrap gap-4 justify-center">
-          <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-700 dark:hover:bg-indigo-800">
+
+        <Link href={`/home`}>
+          <Button size="lg" className="relative bg-black text-white border border-white rounded-lg overflow-hidden hover:bg-gray-800">
             Reportar Queja <ArrowRightIcon className="ml-2" />
           </Button>
-          <Button size="lg" variant="outline" className="text-indigo-600 border-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:border-indigo-400 dark:hover:bg-indigo-950/30">
+          </Link>
+          <Link href={`/home`}>
+          <Button size="lg"  className="relative bg-black text-white border border-white rounded-lg overflow-hidden hover:bg-gray-800">
             Soy Funcionario
           </Button>
+          </Link>
+
         </div>
         <div className="mt-16 relative w-full max-w-4xl">
-          <div className="absolute -inset-1 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg blur opacity-30"></div>
-          <div className="relative bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-lg overflow-hidden">
-            <Image 
-              src="/dashboard-preview.png" 
-              alt="Dashboard de la Plataforma" 
-              width={1200}
-              height={600}
-              className="w-full h-auto"
-            />
-          </div>
-        </div>
+  <div className="absolute -inset-1 bg-gradient-to-r from-black to-gray-600 rounded-lg blur opacity-30"></div>
+  <div className="relative bg-white dark:bg-black border border-gray-300 dark:border-gray-700 rounded-lg overflow-hidden">
+    <Image 
+      src="/dashboard-preview.jpg" 
+      alt="Dashboard de la Plataforma" 
+      width={1200}
+      height={600}
+      className="w-full h-auto"
+    />
+  </div>
+</div>
+
       </section>
 
       {/* Features Section */}
@@ -60,17 +67,17 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {[
             {
-              icon: <ChatBubbleIcon className="h-8 w-8 text-indigo-500" />,
+              icon: <ChatBubbleIcon className="h-8 w-8 text-gray-600 dark:text-gray-300" />,
               title: "Reportes Ciudadanos",
               description: "Presenta tus quejas y sugerencias de manera fácil y rápida con seguimiento en tiempo real."
             },
             {
-              icon: <PersonIcon className="h-8 w-8 text-indigo-500" />,
+              icon: <PersonIcon className="h-8 w-8 text-gray-600 dark:text-gray-300" />,
               title: "Panel para Funcionarios",
               description: "Gestiona reportes, responde a los ciudadanos y coordina soluciones desde un solo lugar."
             },
             {
-              icon: <StarIcon className="h-8 w-8 text-indigo-500" />,
+              icon: <StarIcon className="h-8 w-8 text-gray-600 dark:text-gray-300" />,
               title: "Transparencia",
               description: "Visualiza estadísticas públicas sobre la gestión de quejas y desempeño de funcionarios."
             }
@@ -147,13 +154,13 @@ export default function HomePage() {
           <CardContent className="flex flex-col md:flex-row items-center justify-center gap-4">
             
             <Link href={`/register`}>
-            <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-700 dark:hover:bg-indigo-800 w-full md:w-auto">
+            <Button size="lg" className="relative bg-black text-white border border-white rounded-lg overflow-hidden hover:bg-gray-800">
               Crear Cuenta Ciudadano
             </Button>
             </Link>
             
             <Link href={`/refunc`}>
-            <Button size="lg" variant="outline" className="w-full md:w-auto text-indigo-600 border-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:border-indigo-400 dark:hover:bg-indigo-950/30">
+            <Button size="lg" className="relative bg-black text-white border border-white rounded-lg overflow-hidden hover:bg-gray-800">
               Acceso para Funcionarios
             </Button>
             </Link>

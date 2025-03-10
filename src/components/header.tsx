@@ -41,7 +41,7 @@ export default function Header() {
       </div>
       <div className="flex items-center gap-6">
         <nav className="hidden md:flex space-x-6">
-          <Link href="/home" className="text-gray-600 dark:text-gray-200 hover:text-indigo-600 dark:hover:text-indigo-400 transition">Posts</Link>
+          <Link href="/home" className="text-gray-600 dark:text-gray-200 hover:text-gray-900 dark:hover:text-gray-400 transition">Posts</Link>
         </nav>
         
         {loading ? (
