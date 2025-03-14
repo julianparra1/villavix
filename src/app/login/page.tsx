@@ -1,3 +1,4 @@
+//app/login/page.tsx
 'use client';
 import { Suspense } from 'react';
 import { useState } from 'react';
@@ -31,17 +32,15 @@ function LoginPage() {
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
-    
-    
+
     try {
       const { token } = await authService.login(email, password);
-      document.cookie = `sessionToken=${token}; path=/`;      
+      document.cookie = `sessionToken=${token}; path=/`;  
+      window.location.href = "/home";   
     } catch (err: any) {
       setError(err.message);
     } finally {
       setLoading(false);
-      router.push('/home');
-      return;
     };
 };
 
