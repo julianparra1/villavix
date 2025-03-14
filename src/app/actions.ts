@@ -73,8 +73,13 @@ export async function uploadImage(formData: FormData) {
   }
 }
 
-// Server action to create post using Admin SDK
-export async function createPost(formData: FormData) {
+/// Server action to create post using Admin SDK
+export async function createPost(postData: {
+  title: string;
+  content: string;
+  hashtags?: string[];
+  imageUrl?: string;
+}) {
   try {
     // Get the current user's session
     const sessionCookie = (await cookies()).get('sessionToken')?.value;
@@ -83,9 +88,7 @@ export async function createPost(formData: FormData) {
     }
 
     const decodedClaims = await adminAuth.verifyIdToken(sessionCookie);
-    const title = formData.get('title') as string;
-    const content = formData.get('content') as string;
-    const imageUrl = formData.get('imageUrl') as string;
+    const { title, content, hashtags = [], imageUrl = null } = postData;
 
     if (!title || !content) {
       return { error: 'Title and content are required' };
@@ -98,9 +101,9 @@ export async function createPost(formData: FormData) {
       title,
       authorName: decodedClaims.name || 'Usuario',
       imageuser: '', // Add appropriate value
-      imageUrl: imageUrl || null,
-      content: content,
-      hashtags: ["test"], // Add appropriate value
+      imageUrl,
+      content,
+      hashtags,
       createdAt: new Date().toISOString() // This will be updated with server timestamp
     };
 
@@ -178,17 +181,18 @@ export async function getPosts(limit = 5, lastPostId?: string) {
   }
 }
 
-export async function getRecentPostsWithSummary(limit = 5, lastPostId?: string) {
+export async function getRecentPostsWithSummary(limit = 5, lastPostId?: string, searchQuery?: string) {
   try {
-    // Calcular la fecha de hace 2 días
-    const twoDaysAgo = new Date();
-    twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
-    
-    // Iniciar la consulta base con el filtro de fecha
+    // Iniciar la consulta base
     let query = adminDb.collection('posts')
-      .where('createdAt', '>=', twoDaysAgo)
-      .orderBy('createdAt', 'desc');    
-    // Aplicar paginación si se proporciona un lastPostId
+      .orderBy('createdAt', 'desc');
+    
+      if (searchQuery && searchQuery.startsWith('#')) {
+        const hashtag = searchQuery.toLowerCase();
+        query = query.where('hashtags', 'array-contains', hashtag);
+      }
+      
+    
     if (lastPostId) {
       const lastDoc = await adminDb.collection('posts').doc(lastPostId).get();
       if (lastDoc.exists) {
@@ -197,10 +201,10 @@ export async function getRecentPostsWithSummary(limit = 5, lastPostId?: string) 
     }
     
     const postsSnapshot = await query.get();
-    const hasMore = postsSnapshot.docs.length === limit;
     
     // Procesar los posts
-    const posts = postsSnapshot.docs.map(doc => {
+    let posts = postsSnapshot.docs.map(doc => {
+      // ...existing mapping code...
       const data = doc.data();
       
       // Manejar diferentes tipos de createdAt
@@ -231,11 +235,26 @@ export async function getRecentPostsWithSummary(limit = 5, lastPostId?: string) 
       };
     });
     
+    // Filter posts by search query if provided
+    if (searchQuery && searchQuery.trim() !== '') {
+      const searchTermLower = searchQuery.toLowerCase();
+      posts = posts.filter(post => 
+        post.content.toLowerCase().includes(searchTermLower) || 
+        post.title.toLowerCase().includes(searchTermLower) ||
+        (post.hashtags && post.hashtags.some(tag => 
+          tag.toLowerCase().includes(searchTermLower)
+        ))
+      );
+    }
+    
+    const hasMore = postsSnapshot.docs.length === limit;
+    
     // Generar un resumen general solo si hay posts
     let generalSummary = '';
     let contentHtml = '';
     if (posts.length > 0) {
       try {
+        // ...existing summary generation code...
         const postSeparator = "@@@";
         const prompt = `
           Eres un asistente de IA que ayuda a los funcionarios de gobierno en una comunidad en línea que conecta con las quejas de los ciudadanos.
@@ -259,19 +278,20 @@ export async function getRecentPostsWithSummary(limit = 5, lastPostId?: string) 
         if (processedContent){
           contentHtml = processedContent.toString();
         }
-        
       } catch (error) {
         console.error('Error generando resumen con Gemini:', error);
-        generalSummary = 'No se pudo generar un resumen automático.';
+        contentHtml = 'No se pudo generar un resumen automático.';
       }
     } else {
-      generalSummary = 'No hay publicaciones recientes para resumir.';
+      contentHtml = searchQuery 
+        ? 'No se encontraron publicaciones para esta búsqueda.'
+        : 'No hay publicaciones recientes para resumir.';
     }
     
-    return { posts, hasMore, contentHtml};
+    return { posts, hasMore, contentHtml };
   } catch (error) {
     console.error('Error fetching posts or generating summary:', error);
-    return { posts: [], hasMore: false, generalSummary: 'Error al procesar las publicaciones recientes.' };
+    return { posts: [], hasMore: false, contentHtml: 'Error al procesar las publicaciones recientes.' };
   }
 }
 

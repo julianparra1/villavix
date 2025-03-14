@@ -140,7 +140,7 @@ export default function HomePage() {
                 height={30}
               />
               <span className="font-ebgaramond font-medium text-xl">VillaVix</span>
-            </div>
+              </div>
             <div className="flex gap-6">
               <Link href="#" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition">Privacidad</Link>
               <Link href="#" className="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition">Términos</Link>

@@ -40,9 +40,10 @@ function LoginPage() {
       setError(err.message);
     } finally {
       setLoading(false);
-      return router.push('/home');
+      router.push('/home');
+      return;
     };
-  };
+};
 
   return (
 

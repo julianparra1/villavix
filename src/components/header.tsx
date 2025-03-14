@@ -94,7 +94,7 @@ export default function Header() {
             <Link href={`/login`}>
               <Button variant="outline" className="hidden md:flex">Iniciar Sesión</Button>
             </Link>
-            <Link href={`/page`}>
+            <Link href={`/register`}>
               <Button variant="outline" className="hidden md:flex">Registrarse</Button>
             </Link>
           </>
